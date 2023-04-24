@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 )
@@ -10,15 +11,16 @@ type Category struct {
 }
 
 type CategoryResponse struct {
-	Id         int    `json:"id" db:"id"`
-	Name       string `json:"name" db:"name"`
-	UpateTime  any    `json:"updateTime" db:"updateTime"`
-	CreateTime string `json:"createTime" db:"createTime"`
+	Id         int          `json:"id" db:"id"`
+	Name       string       `json:"name" db:"name"`
+	UpateTime  sql.NullTime `json:"updateTime" db:"updateTime"`
+	CreateTime sql.NullTime `json:"createTime" db:"createTime"`
 }
 
 func GetCategories() ([]CategoryResponse, error) {
 	var CategoryResponse []CategoryResponse
 	err := Db.Select(&CategoryResponse, "select * from category")
+
 	fmt.Println(err)
 	if err != nil {
 		return nil, err

@@ -10,7 +10,7 @@ import (
 var Db *sqlx.DB
 
 func InitDb() {
-	conn, err := sqlx.Open("mysql", "root:123456@tcp(127.0.0.1)/ginblog")
+	conn, err := sqlx.Open("mysql", "root:123456@tcp(127.0.0.1)/ginblog?parseTime=True")
 	if err != nil {
 		fmt.Println("数据库连接失败", err)
 	}
