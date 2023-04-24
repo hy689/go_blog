@@ -22,8 +22,7 @@ func GetCategories(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, _ := json.Marshal(categories)
-	utils.HandleSuccess(response, w)
+	utils.HandleSuccess(categories, w)
 
 }
 

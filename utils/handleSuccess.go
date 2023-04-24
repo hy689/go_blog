@@ -12,6 +12,7 @@ type Success struct {
 
 // type
 func HandleSuccess(data any, w http.ResponseWriter) {
+	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	success := &Success{
 		Code: 200,

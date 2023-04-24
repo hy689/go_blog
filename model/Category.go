@@ -9,13 +9,21 @@ type Category struct {
 	Name string ` json:"name"`
 }
 
-func GetCategories() ([]Category, error) {
-	var categories []Category
-	err := Db.Select(&categories, "select * from category")
+type CategoryResponse struct {
+	Id         int    `json:"id" db:"id"`
+	Name       string `json:"name" db:"name"`
+	UpateTime  any    `json:"updateTime" db:"updateTime"`
+	CreateTime string `json:"createTime" db:"createTime"`
+}
+
+func GetCategories() ([]CategoryResponse, error) {
+	var CategoryResponse []CategoryResponse
+	err := Db.Select(&CategoryResponse, "select * from category")
+	fmt.Println(err)
 	if err != nil {
 		return nil, err
 	}
-	return categories, nil
+	return CategoryResponse, nil
 
 }
 
