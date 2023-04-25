@@ -7,31 +7,26 @@ import (
 )
 
 type Category struct {
-	Name string ` json:"name"`
-}
-
-type CategoryResponse struct {
 	Id         int          `json:"id" db:"id"`
 	Name       string       `json:"name" db:"name"`
 	UpateTime  sql.NullTime `json:"updateTime" db:"updateTime"`
 	CreateTime sql.NullTime `json:"createTime" db:"createTime"`
 }
 
-func GetCategories() ([]CategoryResponse, error) {
-	var CategoryResponse []CategoryResponse
-	err := Db.Select(&CategoryResponse, "select * from category")
+func GetCategories() ([]Category, error) {
+	var Category []Category
+	err := Db.Select(&Category, "select * from category")
 
 	fmt.Println(err)
 	if err != nil {
 		return nil, err
 	}
-	return CategoryResponse, nil
-
+	return Category, nil
 }
 
 func SaveCategory(category Category) (int64, error) {
 
-	result, err := Db.Exec("insert into category(created_at,name) values(?,?)", time.Now(), category.Name)
+	result, err := Db.Exec("insert into category(createTime,name) values(?,?)", time.Now(), category.Name)
 	if err != nil {
 		fmt.Println("insert category err:", err)
 		return 0, err
