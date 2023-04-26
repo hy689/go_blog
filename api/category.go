@@ -36,8 +36,18 @@ func AddCategory(w http.ResponseWriter, r *http.Request) {
 	data, _ := ioutil.ReadAll(r.Body)
 
 	var category = &model.Category{}
-
 	json.Unmarshal(data, category)
+
+	if category.Name == "" {
+		utils.HandleError(500, "分类名称不能为空", w)
+		return
+	}
+
+	category1, _ := model.GetCategoryByName(category.Name)
+	if category1.Name != "" {
+		utils.HandleError(500, "分类名称重复", w)
+		return
+	}
 
 	id, err := model.SaveCategory(*category)
 	if err != nil {

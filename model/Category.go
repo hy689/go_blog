@@ -10,7 +10,7 @@ type Category struct {
 	Id         int          `json:"id" db:"id"`
 	Name       string       `json:"name" db:"name"`
 	UpateTime  sql.NullTime `json:"updateTime" db:"updateTime"`
-	CreateTime sql.NullTime `json:"createTime" db:"createTime"`
+	CreateTime time.Time    `json:"createTime" db:"createTime"`
 }
 
 func GetCategories() ([]Category, error) {
@@ -22,6 +22,24 @@ func GetCategories() ([]Category, error) {
 		return nil, err
 	}
 	return Category, nil
+}
+
+func GetCategoryById(id int) (Category, error) {
+	var category Category
+	err := Db.Get(&category, "select * from category where id=?", id)
+	if err != nil {
+		return category, err
+	}
+	return category, nil
+}
+
+func GetCategoryByName(name string) (Category, error) {
+	var category Category
+	err := Db.Get(&category, "select * from category where name=?", name)
+	if err != nil {
+		return category, err
+	}
+	return category, nil
 }
 
 func SaveCategory(category Category) (int64, error) {

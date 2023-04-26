@@ -11,7 +11,7 @@ type Success struct {
 }
 
 // type
-func HandleSuccess(data any, w http.ResponseWriter) {
+func HandleSuccess(data interface{}, w http.ResponseWriter) {
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	success := &Success{
