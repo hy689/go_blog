@@ -1,26 +1,27 @@
 package model
 
 import (
-	"database/sql"
 	"fmt"
 	"time"
 )
 
 type Category struct {
-	Id         int          `json:"id" db:"id"`
-	Name       string       `json:"name" db:"name"`
-	UpateTime  sql.NullTime `json:"updateTime" db:"updateTime"`
-	CreateTime time.Time    `json:"createTime" db:"createTime"`
+	Id         int    `json:"id" db:"id"`
+	Name       string `json:"name" db:"name"`
+	UpateTime  int64  `json:"updateTime" db:"updateTime"`
+	CreateTime int64  `json:"createTime" db:"createTime"`
 }
 
 func GetCategories() ([]Category, error) {
-	var Category []Category
+
+	var Category []Category = []Category{}
 	err := Db.Select(&Category, "select * from category")
 
 	fmt.Println(err)
 	if err != nil {
 		return nil, err
 	}
+
 	return Category, nil
 }
 
@@ -44,7 +45,7 @@ func GetCategoryByName(name string) (Category, error) {
 
 func SaveCategory(category Category) (int64, error) {
 
-	result, err := Db.Exec("insert into category(createTime,name) values(?,?)", time.Now(), category.Name)
+	result, err := Db.Exec("insert into category(createTime,updateTime,name) values(?,?)", time.Now().Unix()*1000, time.Now().Unix()*1000, category.Name)
 	if err != nil {
 		fmt.Println("insert category err:", err)
 		return 0, err
