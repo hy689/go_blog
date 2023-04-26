@@ -9,6 +9,31 @@ import (
 	"net/http"
 )
 
+func UpdateCategory(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("请求方式不对"))
+		return
+	}
+
+	category := &model.Category{}
+	data, _ := ioutil.ReadAll(r.Body)
+	json.Unmarshal(data, category)
+
+	if category.Id == 0 {
+		utils.HandleError(500, "分类id不能为空", w)
+		return
+	}
+
+	row, err := model.UpdateCategory(*category)
+	if err != nil || row <= 0 {
+		utils.HandleError(500, "更新分类失败", w)
+		return
+	}
+
+	utils.HandleSuccess("ok", w)
+
+}
 func GetCategories(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusBadRequest)
