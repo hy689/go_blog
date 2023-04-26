@@ -12,6 +12,10 @@ type Category struct {
 	CreateTime int64  `json:"createTime" db:"createTime"`
 }
 
+func (c *Category) Update(name string) {
+	c.Name = name
+}
+
 func GetCategories() ([]Category, error) {
 
 	var Category []Category = []Category{}
