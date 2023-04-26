@@ -15,26 +15,6 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// // 根据请求body创建一个json解析器实例
-	// decoder := json.NewDecoder(r.Body)
-
-	// // 用于存放参数key=value数据
-	// var params map[string]string
-
-	// // 解析参数 存入map
-	// decoder.Decode(&params)
-
-	// fmt.Printf("POST json: username=%s, password=%s, password=%s\n", params["username"], params["password"], params["role"])
-
-	// var user model.User
-	// user.Username = params["username"]
-	// user.Password = params["password"]
-	// role, err := strconv.Atoi(params["role"])
-	// if err != nil {
-	// 	utils.HandleHttpError("role 参数请求错误", w)
-	// 	return
-	// }
-	// user.Role = role
 	data, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		utils.HandleHttpError(err.Error(), w)
