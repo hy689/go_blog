@@ -78,3 +78,18 @@ func UpdateCategory(category Category) (int64, error) {
 	fmt.Println("update succ:", row)
 	return row, nil
 }
+
+func DeleteCategory(id int) (int64, error) {
+	res, err := Db.Exec("delete from category where id=?", id)
+	if err != nil {
+		fmt.Println("exec failed, ", err)
+		return 0, err
+	}
+	row, err := res.RowsAffected()
+	if err != nil {
+		fmt.Println("rows failed, ", err)
+		return 0, err
+	}
+	fmt.Println("delete succ:", row)
+	return row, nil
+}

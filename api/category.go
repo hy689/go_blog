@@ -1,10 +1,8 @@
 package api
 
 import (
-	"encoding/json"
 	"go_blog/model"
 	"go_blog/utils"
-	"io/ioutil"
 	_ "io/ioutil"
 	"net/http"
 )
@@ -69,29 +67,38 @@ func GetCategories(w http.ResponseWriter, r *http.Request) {
 
 }
 
+type AddCategoryCommand struct {
+	Name string `json:"name"`
+}
+
 func AddCategory(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.HandleError(400, "请求方式错误", w)
 		return
 	}
 
-	data, _ := ioutil.ReadAll(r.Body)
+	c := &AddCategoryCommand{}
+	err := utils.MarshalCommand(r, c)
+	if err != nil {
+		utils.HandleError(500, err.Error(), w)
+		return
+	}
 
-	var category = &model.Category{}
-	json.Unmarshal(data, category)
-
-	if category.Name == "" {
+	if c.Name == "" {
 		utils.HandleError(500, "分类名称不能为空", w)
 		return
 	}
 
-	category1, _ := model.GetCategoryByName(category.Name)
-	if category1.Name != "" {
+	v, _ := model.GetCategoryByName(c.Name)
+	if v.Name != "" {
 		utils.HandleError(500, "分类名称重复", w)
 		return
 	}
 
-	id, err := model.SaveCategory(*category)
+	v = model.Category{}
+	v.Update(c.Name)
+
+	id, err := model.SaveCategory(v)
 	if err != nil {
 		utils.HandleError(500, "添加分类失败", w)
 		return
@@ -107,17 +114,32 @@ func AddCategory(w http.ResponseWriter, r *http.Request) {
 	utils.HandleSuccess(categoryResponse, w)
 }
 
+type DeleteCategoryCommand struct {
+	ID int `json:"id"`
+}
+
 func DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.HandleError(400, "请求方式错误", w)
 	}
 
-	category := &model.Category{}
-	data, _ := ioutil.ReadAll(r.Body)
-	json.Unmarshal(data, category)
+	c := &DeleteCategoryCommand{}
+	err := utils.MarshalCommand(r, c)
+	if err != nil {
+		utils.HandleError(500, err.Error(), w)
+		return
+	}
 
-	if category.Id == 0 {
-		// utils.HandleError(500,"")
+	v, _ := model.GetCategoryById(c.ID)
+	if v.Id == 0 {
+		utils.HandleError(500, "分类不存在", w)
+		return
+	}
+
+	row, _ := model.DeleteCategory(v.Id)
+	if row > 0 {
+		utils.HandleSuccess("ok", w)
+		return
 	}
 
 }
