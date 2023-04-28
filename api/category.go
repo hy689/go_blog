@@ -30,11 +30,8 @@ func UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v, err := model.GetCategoryById(c.ID)
-	if err != nil {
-		utils.HandleError(500, "获取分类失败", w)
-		return
-	}
+	v := model.GetCategoryById(c.ID)
+
 	if v.Id == 0 {
 		utils.HandleError(500, "分类不存在", w)
 		return
@@ -42,7 +39,7 @@ func UpdateCategory(w http.ResponseWriter, r *http.Request) {
 
 	v.Update(c.Name)
 
-	row, err := model.UpdateCategory(v)
+	row, err := model.UpdateCategory(*v)
 	if err != nil || row <= 0 {
 		utils.HandleError(500, "更新分类失败", w)
 		return
@@ -130,7 +127,7 @@ func DeleteCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v, _ := model.GetCategoryById(c.ID)
+	v := model.GetCategoryById(c.ID)
 	if v.Id == 0 {
 		utils.HandleError(500, "分类不存在", w)
 		return

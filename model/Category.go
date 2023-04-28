@@ -29,13 +29,12 @@ func GetCategories() ([]Category, error) {
 	return Category, nil
 }
 
-func GetCategoryById(id int) (Category, error) {
+func GetCategoryById(id int) *Category {
 	var category Category
-	err := Db.Get(&category, "select * from category where id=?", id)
-	if err != nil {
-		return category, err
-	}
-	return category, nil
+
+	Db.Get(&category, "select * from category where id=?", id)
+
+	return &category
 }
 
 func GetCategoryByName(name string) (Category, error) {

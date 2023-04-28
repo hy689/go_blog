@@ -5,19 +5,29 @@ import (
 )
 
 type Article struct {
-	Category Category
-	Id       string `json:"id"`
-	Title    string `json:"title"`
-	Cid      string `json:"cid"`
-	Content  string `json:"content"`
-	Img      string `json:"img"`
-	Desc     string `json:"desc"`
+	Category    Category
+	Id          string `json:"id"`
+	Title       string `json:"title"`
+	Content     string `json:"content"`
+	Img         string `json:"img"`
+	Description string `json:"description" db:"description"`
 }
 
-func SaveArticle(article Article) int64 {
-	result, _ := Db.Exec("insert into article(cid,title,content,img,desc) values(?,?,?,?,?)", article.Category.Id, article.Title, article.Content, article.Img, article.Desc)
-	id, _ := result.LastInsertId()
-	return id
+func (article *Article) Update(category Category, title string, content string, img string, description string) {
+	article.Category = category
+	article.Title = title
+	article.Content = content
+	article.Img = img
+	article.Description = description
+}
+
+func SaveArticle(article Article) (int64, error) {
+	result, err := Db.Exec("insert into article(cid,title,content,img,description) values(?,?,?,?,?)", article.Category.Id, article.Title, article.Content, article.Img, article.Description)
+	if err != nil {
+		return 0, err
+	}
+	id, err := result.LastInsertId()
+	return id, err
 
 }
 
@@ -51,7 +61,7 @@ func DeteleArticle(id int64) int64 {
 }
 
 func UpdateArticle(article Article) int64 {
-	res, err := Db.Exec("update article set cid=?,title=?,content=?,img=?,desc=? where id=?", article.Category.Id, article.Title, article.Content, article.Img, article.Desc, article.Id)
+	res, err := Db.Exec("update article set cid=?,title=?,content=?,img=?,description=? where id=?", article.Category.Id, article.Title, article.Content, article.Img, article.Description, article.Id)
 	if err != nil {
 		fmt.Println("update article err:", err)
 	}
