@@ -3,7 +3,6 @@ package api
 import (
 	"go_blog/model"
 	"go_blog/utils"
-	_ "io/ioutil"
 	"net/http"
 )
 
