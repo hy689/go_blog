@@ -12,6 +12,14 @@ type ChangeCategoryNameCommand struct {
 	Name string `json:"name"`
 }
 
+type AddCategoryCommand struct {
+	Name string `json:"name"`
+}
+
+type DeleteCategoryCommand struct {
+	ID int `json:"id"`
+}
+
 func UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.HandleError(400, "请求方式错误", w)
@@ -64,10 +72,6 @@ func GetCategories(w http.ResponseWriter, r *http.Request) {
 
 }
 
-type AddCategoryCommand struct {
-	Name string `json:"name"`
-}
-
 func AddCategory(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.HandleError(400, "请求方式错误", w)
@@ -109,10 +113,6 @@ func AddCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.HandleSuccess(categoryResponse, w)
-}
-
-type DeleteCategoryCommand struct {
-	ID int `json:"id"`
 }
 
 func DeleteCategory(w http.ResponseWriter, r *http.Request) {

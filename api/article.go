@@ -6,12 +6,16 @@ import (
 	"net/http"
 )
 
-type ArticleRequest struct {
+type AddArticleCommand struct {
 	Title       string `json:"title"`
 	Content     string `json:"content"`
 	Img         string `json:"img"`
 	Description string `json:"description"`
 	Cid         int    `json:"cid"`
+}
+
+type AddArticleResponse struct {
+	Id int `json:"id"`
 }
 
 func AddArticle(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +25,7 @@ func AddArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := &ArticleRequest{}
+	c := &AddArticleCommand{}
 	err := utils.MarshalCommand(r, c)
 
 	if err != nil {
@@ -66,10 +70,6 @@ func AddArticle(w http.ResponseWriter, r *http.Request) {
 	}
 	if lastId == 0 {
 		utils.HandleError(500, "添加文章失败", w)
-	}
-
-	type AddArticleResponse struct {
-		Id int `json:"id"`
 	}
 
 	addArticleResponse := AddArticleResponse{
