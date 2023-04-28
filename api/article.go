@@ -78,3 +78,23 @@ func AddArticle(w http.ResponseWriter, r *http.Request) {
 
 	utils.HandleSuccess(addArticleResponse, w)
 }
+
+func GetArticleList(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.HandleError(400, "请求格式错误", w)
+		return
+	}
+
+	articles, err := model.GetArticles()
+	if err != nil {
+		utils.HandleError(500, "数据库错误 GetArticles "+err.Error(), w)
+	}
+
+	for i := 0; i < len(articles); i++ {
+		v := model.GetCategoryById(articles[i].Cid)
+		articles[i].SetCategory(*v)
+	}
+
+	utils.HandleSuccess(articles, w)
+
+}

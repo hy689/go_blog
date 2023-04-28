@@ -2,15 +2,19 @@ package model
 
 import (
 	"fmt"
+	"time"
 )
 
 type Article struct {
-	Category    Category
-	Id          string `json:"id"`
-	Title       string `json:"title"`
-	Content     string `json:"content"`
-	Img         string `json:"img"`
-	Description string `json:"description" db:"description"`
+	Category    Category `json:"category"`
+	Id          int      `json:"id"`
+	Title       string   `json:"title"`
+	Content     string   `json:"content"`
+	Img         string   `json:"img"`
+	Description string   `json:"description" db:"description"`
+	Cid         int      `json:"cid"`
+	Created     int64    `json:"created" db:"created"`
+	Updated     int64    `json:"updated" db:"updated"`
 }
 
 func (article *Article) Update(category Category, title string, content string, img string, description string) {
@@ -21,14 +25,28 @@ func (article *Article) Update(category Category, title string, content string, 
 	article.Description = description
 }
 
+func (article *Article) SetCategory(category Category) {
+	article.Category = category
+}
+
 func SaveArticle(article Article) (int64, error) {
-	result, err := Db.Exec("insert into article(cid,title,content,img,description) values(?,?,?,?,?)", article.Category.Id, article.Title, article.Content, article.Img, article.Description)
+	result, err := Db.Exec("insert into article(cid,title,content,img,description,created,updated) values(?,?,?,?,?,?,?)", article.Category.Id, article.Title, article.Content, article.Img, article.Description, time.Now().Unix(), time.Now().Unix())
 	if err != nil {
 		return 0, err
 	}
 	id, err := result.LastInsertId()
 	return id, err
 
+}
+
+func GetArticles() ([]Article, error) {
+	var article []Article
+	err := Db.Select(&article, "select * from article")
+	if err != nil {
+		fmt.Println("select article err:", err)
+		return nil, err
+	}
+	return article, nil
 }
 
 func GetArticleById(id int64) Article {

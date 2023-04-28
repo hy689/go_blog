@@ -16,6 +16,7 @@ func InitRouter() {
 	http.HandleFunc("/category/delete", api.DeleteCategory)
 
 	http.HandleFunc("/article/add", api.AddArticle)
+	http.HandleFunc("/article/getAll", api.GetArticleList)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
