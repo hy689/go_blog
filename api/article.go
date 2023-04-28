@@ -18,6 +18,21 @@ type AddArticleResponse struct {
 	Id int `json:"id"`
 }
 
+type GetArticlesCommand struct {
+	Cid int `json:"cid"`
+}
+
+type GetArticlesResponse struct {
+	Category    model.Category `json:"category"`
+	Id          int            `json:"id"`
+	Title       string         `json:"title"`
+	Content     string         `json:"content"`
+	Img         string         `json:"img"`
+	Description string         `json:"description" db:"description"`
+	Created     int64          `json:"created" db:"created"`
+	Updated     int64          `json:"updated" db:"updated"`
+}
+
 func AddArticle(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
@@ -90,11 +105,21 @@ func GetArticleList(w http.ResponseWriter, r *http.Request) {
 		utils.HandleError(500, "数据库错误 GetArticles "+err.Error(), w)
 	}
 
+	var getArticlesResponse []GetArticlesResponse
 	for i := 0; i < len(articles); i++ {
+		articlesResponse := &GetArticlesResponse{}
 		v := model.GetCategoryById(articles[i].Cid)
-		articles[i].SetCategory(*v)
+		articlesResponse.Category = *v
+		articlesResponse.Content = articles[i].Content
+		articlesResponse.Id = articles[i].Id
+		articlesResponse.Title = articles[i].Title
+		articlesResponse.Img = articles[i].Img
+		articlesResponse.Description = articles[i].Description
+		articlesResponse.Created = articles[i].Created
+		articlesResponse.Updated = articles[i].Updated
+		getArticlesResponse = append(getArticlesResponse, *articlesResponse)
 	}
 
-	utils.HandleSuccess(articles, w)
+	utils.HandleSuccess(getArticlesResponse, w)
 
 }
