@@ -67,7 +67,7 @@ func GetArticleByCid(cid int64) []Article {
 	return article
 }
 
-func DeteleArticle(id int64) int64 {
+func DeleteArticle(id int64) int64 {
 	res, err := Db.Exec("delete from article where id=?", id)
 	if err != nil {
 		fmt.Println("delete article err:", err)
@@ -78,11 +78,12 @@ func DeteleArticle(id int64) int64 {
 
 }
 
-func UpdateArticle(article Article) int64 {
+func UpdateArticle(article Article) (int64, error) {
 	res, err := Db.Exec("update article set cid=?,title=?,content=?,img=?,description=? where id=?", article.Category.Id, article.Title, article.Content, article.Img, article.Description, article.Id)
 	if err != nil {
 		fmt.Println("update article err:", err)
+		return 0, err
 	}
 	row, _ := res.RowsAffected()
-	return row
+	return row, nil
 }

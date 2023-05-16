@@ -33,6 +33,22 @@ type GetArticlesResponse struct {
 	Updated     int64          `json:"updated" db:"updated"`
 }
 
+type DeleteArticleCommand struct {
+	Id int `json:"id"`
+}
+
+type DeleteArticleResponse struct {
+}
+
+type UpdateArticleCommand struct {
+	Title       string `json:"title"`
+	Content     string `json:"content"`
+	Img         string `json:"img"`
+	Description string `json:"description"`
+	Cid         int    `json:"cid"`
+	Id          int    `json:"id"`
+}
+
 func AddArticle(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
@@ -106,6 +122,8 @@ func GetArticleList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var getArticlesResponse []GetArticlesResponse
+	// getArticlesResponse := make([]GetArticlesResponse, 0)
+
 	for i := 0; i < len(articles); i++ {
 		articlesResponse := &GetArticlesResponse{}
 		v := model.GetCategoryById(articles[i].Cid)
@@ -121,5 +139,68 @@ func GetArticleList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.HandleSuccess(getArticlesResponse, w)
+
+}
+
+func DeleteArticle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.HandleError(400, "请求格式错误", w)
+		return
+	}
+
+	c := &DeleteArticleCommand{}
+	utils.MarshalCommand(r, c)
+
+	v := model.GetArticleById(int64(c.Id))
+
+	if v.Id == 0 {
+		utils.HandleError(500, "文章不存在", w)
+		return
+	}
+
+	res := model.DeleteArticle(int64(v.Id))
+	if res == 0 {
+		utils.HandleError(500, "删除失败", w)
+		return
+	}
+
+	utils.HandleSuccess("ok", w)
+}
+
+func UpdateArticle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		utils.HandleError(400, "请求格式错误", w)
+		return
+	}
+
+	c := &UpdateArticleCommand{}
+	utils.MarshalCommand(r, c)
+
+	if c.Id == 0 {
+		utils.HandleError(500, "id不能为空", w)
+		return
+	}
+
+	article := model.GetArticleById(int64(c.Id))
+	if article.Id == 0 {
+		utils.HandleError(500, "文章不存在", w)
+		return
+	}
+
+	category := model.GetCategoryById(c.Cid)
+	if category == nil {
+		utils.HandleError(500, "分类不存在", w)
+		return
+	}
+
+	article.Update(*category, c.Title, c.Content, c.Img, c.Description)
+
+	_, err := model.UpdateArticle(article)
+	if err != nil {
+		utils.HandleError(500, err.Error(), w)
+		return
+	}
+
+	utils.HandleSuccess("ok", w)
 
 }
