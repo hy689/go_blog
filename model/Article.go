@@ -79,7 +79,7 @@ func DeleteArticle(id int64) int64 {
 }
 
 func UpdateArticle(article Article) (int64, error) {
-	res, err := Db.Exec("update article set cid=?,title=?,content=?,img=?,description=? where id=?", article.Category.Id, article.Title, article.Content, article.Img, article.Description, article.Id)
+	res, err := Db.Exec("update article set cid=?,title=?,content=?,img=?,description=?,updated=? where id=?", article.Category.Id, article.Title, article.Content, article.Img, article.Description, time.Now().Unix(), article.Id)
 	if err != nil {
 		fmt.Println("update article err:", err)
 		return 0, err
