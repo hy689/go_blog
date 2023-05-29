@@ -4,6 +4,7 @@ import (
 	"go_blog/model"
 	"go_blog/utils"
 	"net/http"
+	"strconv"
 )
 
 type AddArticleCommand struct {
@@ -202,5 +203,45 @@ func UpdateArticle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.HandleSuccess("ok", w)
+
+}
+
+func GetArticleById(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.HandleError(400, "请求格式错误", w)
+		return
+	}
+
+	query := r.URL.Query()
+	id, _ := strconv.ParseInt(query.Get("id"), 10, 64)
+
+	if id == 0 {
+		utils.HandleError(500, "id不能为空", w)
+		return
+	}
+
+	article := model.GetArticleById(id)
+	if article.Id == 0 {
+		utils.HandleError(500, "文章不存在", w)
+		return
+	}
+
+	category := model.GetCategoryById(article.Cid)
+	if category == nil {
+		utils.HandleError(500, "分类不存在", w)
+		return
+	}
+
+	articlesResponse := &GetArticlesResponse{}
+	articlesResponse.Id = article.Id
+	articlesResponse.Title = article.Title
+	articlesResponse.Content = article.Content
+	articlesResponse.Img = article.Img
+	articlesResponse.Description = article.Description
+	articlesResponse.Created = article.Created
+	articlesResponse.Updated = article.Updated
+	articlesResponse.Category = *category
+
+	utils.HandleSuccess(articlesResponse, w)
 
 }

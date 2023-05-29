@@ -19,6 +19,7 @@ func InitRouter() {
 	http.HandleFunc("/article/getAll", api.GetArticleList)
 	http.HandleFunc("/article/delete", api.DeleteArticle)
 	http.HandleFunc("/article/update", api.UpdateArticle)
+	http.HandleFunc("/article/getById", api.GetArticleById)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
