@@ -7,12 +7,23 @@ import (
 )
 
 type ChangeCategoryNameCommand struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Icon      string `json:"icon"`
+	IconColor string `json:"iconColor"`
 }
 
 type AddCategoryCommand struct {
-	Name string `json:"name"`
+	Name      string `json:"name"`
+	Icon      string `json:"icon"`
+	IconColor string `json:"iconColor"`
+}
+
+type GetCategoriesCommand struct {
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Icon      string `json:"icon"`
+	IconColor string `json:"iconColor"`
 }
 
 type DeleteCategoryCommand struct {
@@ -44,7 +55,7 @@ func UpdateCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v.Update(c.Name)
+	v.Update(c.Name, c.Icon, c.IconColor)
 
 	row, err := model.UpdateCategory(*v)
 	if err != nil || row <= 0 {
@@ -62,12 +73,23 @@ func GetCategories(w http.ResponseWriter, r *http.Request) {
 	}
 
 	categories, err := model.GetCategories()
+
+	var getCategoriesCommand []GetCategoriesCommand
+	for _, v := range categories {
+		getCategoriesCommand = append(getCategoriesCommand, GetCategoriesCommand{
+			ID:        int(v.Id),
+			Name:      v.Name,
+			Icon:      v.Icon,
+			IconColor: v.IconColor,
+		})
+	}
+
 	if err != nil {
 		utils.HandleError(500, "获取分类失败", w)
 		return
 	}
 
-	utils.HandleSuccess(categories, w)
+	utils.HandleSuccess(getCategoriesCommand, w)
 
 }
 
@@ -96,7 +118,7 @@ func AddCategory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	v = model.Category{}
-	v.Update(c.Name)
+	v.Update(c.Name, c.Icon, c.IconColor)
 
 	id, err := model.SaveCategory(v)
 	if err != nil {

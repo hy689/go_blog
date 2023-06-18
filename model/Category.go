@@ -8,12 +8,16 @@ import (
 type Category struct {
 	Id         int    `json:"id" db:"id"`
 	Name       string `json:"name" db:"name"`
-	UpateTime  int64  `json:"updateTime" db:"updateTime"`
+	Icon       string `json:"icon" db:"icon"`
+	IconColor  string `json:"iconColor" db:"iconColor"`
+	UpdateTime int64  `json:"updateTime" db:"updateTime"`
 	CreateTime int64  `json:"createTime" db:"createTime"`
 }
 
-func (c *Category) Update(name string) {
+func (c *Category) Update(name string, icon string, iconColor string) {
 	c.Name = name
+	c.Icon = icon
+	c.IconColor = iconColor
 }
 
 func GetCategories() ([]Category, error) {
@@ -48,7 +52,7 @@ func GetCategoryByName(name string) (Category, error) {
 
 func SaveCategory(category Category) (int64, error) {
 
-	result, err := Db.Exec("insert into category(createTime,updateTime,name) values(?,?,?)", time.Now().Unix(), time.Now().Unix(), category.Name)
+	result, err := Db.Exec("insert into category(createTime,updateTime,name,icon,iconColor) values(?,?,?,?,?)", time.Now().Unix(), time.Now().Unix(), category.Name, category.Icon, category.IconColor)
 	if err != nil {
 		fmt.Println("insert category err:", err)
 		return 0, err
@@ -64,7 +68,7 @@ func SaveCategory(category Category) (int64, error) {
 }
 
 func UpdateCategory(category Category) (int64, error) {
-	res, err := Db.Exec("update category set name=?,updateTime=? where id=?", category.Name, time.Now().Unix(), category.Id)
+	res, err := Db.Exec("update category set name=?,updateTime=?,icon=?,iconColor=? where id=?", category.Name, time.Now().Unix(), category.Icon, category.IconColor, category.Id)
 	if err != nil {
 		fmt.Println("exec failed, ", err)
 		return 0, err
