@@ -38,12 +38,15 @@ func GetErrMag(code int) string {
 type Error struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
+	Success bool   `json:"success"`
 }
 
 func HandleError(code int, err string, w http.ResponseWriter) {
+
 	var error Error
 	error.Code = code
 	error.Message = err
+	error.Success = false
 	w.WriteHeader(http.StatusOK)
 	str, _ := json.Marshal(error)
 	w.Write(str)
