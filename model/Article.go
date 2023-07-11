@@ -95,3 +95,13 @@ func UpdateArticle(article Article) (int64, error) {
 	row, _ := res.RowsAffected()
 	return row, nil
 }
+
+func SearchArticle(title string) ([]Article, error) {
+	var articles []Article
+	err := Db.Select(&articles, "select * from article where title like ?", "%"+title+"%")
+	if err != nil {
+		fmt.Println("select article err:", err)
+		return nil, err
+	}
+	return articles, nil
+}

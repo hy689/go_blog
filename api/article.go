@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"go_blog/model"
 	"go_blog/utils"
 	"net/http"
@@ -262,4 +263,44 @@ func GetArticleById(w http.ResponseWriter, r *http.Request) {
 
 	utils.HandleSuccess(articlesResponse, w)
 
+}
+
+func SearchArticle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.HandleError(400, "请求格式错误", w)
+	}
+
+	query := r.URL.Query()
+	title := query.Get("title")
+	fmt.Println(title, "xxxxxxxxxxxxxxxxx")
+
+	articles, err := model.SearchArticle(title)
+	if err != nil {
+		utils.HandleError(500, err.Error(), w)
+		return
+	}
+
+	articlesResponse := make([]GetArticlesResponse, 0)
+
+	for _, v := range articles {
+		category := model.GetCategoryById(v.Cid)
+
+		if category == nil {
+			category = &model.Category{}
+			return
+		}
+
+		articlesResponse = append(articlesResponse, GetArticlesResponse{
+			Id:          v.Id,
+			Title:       v.Title,
+			Content:     v.Content,
+			Img:         v.Img,
+			Description: v.Description,
+			Created:     v.Created,
+			Updated:     v.Updated,
+			Category:    *category,
+		})
+	}
+
+	utils.HandleSuccess(articlesResponse, w)
 }
