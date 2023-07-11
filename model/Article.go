@@ -39,13 +39,21 @@ func SaveArticle(article Article) (int64, error) {
 
 }
 
-func GetArticles() ([]Article, error) {
+func GetArticles(page int, pageSize int, cId int) ([]Article, error) {
 	var article []Article
-	err := Db.Select(&article, "select * from article")
+	var err error
+
+	if cId != 0 {
+		err = Db.Select(&article, "select * from article where cid=? limit ? offset ?", cId, pageSize, (page-1)*pageSize)
+	} else {
+		err = Db.Select(&article, "select * from article limit ? offset ?", pageSize, (page-1)*pageSize)
+	}
+
 	if err != nil {
 		fmt.Println("select article err:", err)
 		return nil, err
 	}
+
 	return article, nil
 }
 

@@ -20,7 +20,9 @@ type AddArticleResponse struct {
 }
 
 type GetArticlesCommand struct {
-	Cid int `json:"cid"`
+	Cid   int `json:"cid"`
+	Limit int `json:"limit"`
+	Start int `json:"start"`
 }
 
 type GetArticlesResponse struct {
@@ -117,13 +119,29 @@ func GetArticleList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	articles, err := model.GetArticles()
+	query := r.URL.Query()
+	cId, err := strconv.Atoi(query.Get("cId"))
+	if err != nil {
+		cId = 0
+	}
+
+	page, err := strconv.Atoi(query.Get("page"))
+	if err != nil {
+		page = 1
+	}
+
+	pageSize, err := strconv.Atoi(query.Get("pageSize"))
+	if err != nil {
+		pageSize = 10
+	}
+
+	articles, err := model.GetArticles(page, pageSize, cId)
 	if err != nil {
 		utils.HandleError(500, "数据库错误 GetArticles "+err.Error(), w)
 	}
 
-	var getArticlesResponse []GetArticlesResponse
-	// getArticlesResponse := make([]GetArticlesResponse, 0)
+	// var getArticlesResponse []GetArticlesResponse
+	getArticlesResponse := make([]GetArticlesResponse, 0)
 
 	for i := 0; i < len(articles); i++ {
 		articlesResponse := &GetArticlesResponse{}
