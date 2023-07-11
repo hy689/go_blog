@@ -30,6 +30,16 @@ type GetArticlesResponse struct {
 	Category    model.Category `json:"category"`
 	Id          int            `json:"id"`
 	Title       string         `json:"title"`
+	Img         string         `json:"img"`
+	Description string         `json:"description" db:"description"`
+	Created     int64          `json:"created" db:"created"`
+	Updated     int64          `json:"updated" db:"updated"`
+}
+
+type GetArticleResponse struct {
+	Category    model.Category `json:"category"`
+	Id          int            `json:"id"`
+	Title       string         `json:"title"`
 	Content     string         `json:"content"`
 	Img         string         `json:"img"`
 	Description string         `json:"description" db:"description"`
@@ -148,7 +158,6 @@ func GetArticleList(w http.ResponseWriter, r *http.Request) {
 		articlesResponse := &GetArticlesResponse{}
 		v := model.GetCategoryById(articles[i].Cid)
 		articlesResponse.Category = *v
-		articlesResponse.Content = articles[i].Content
 		articlesResponse.Id = articles[i].Id
 		articlesResponse.Title = articles[i].Title
 		articlesResponse.Img = articles[i].Img
@@ -251,14 +260,14 @@ func GetArticleById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	articlesResponse := &GetArticlesResponse{}
+	articlesResponse := &GetArticleResponse{}
 	articlesResponse.Id = article.Id
 	articlesResponse.Title = article.Title
-	articlesResponse.Content = article.Content
 	articlesResponse.Img = article.Img
 	articlesResponse.Description = article.Description
 	articlesResponse.Created = article.Created
 	articlesResponse.Updated = article.Updated
+	articlesResponse.Content = article.Content
 	articlesResponse.Category = *category
 
 	utils.HandleSuccess(articlesResponse, w)
@@ -293,7 +302,6 @@ func SearchArticle(w http.ResponseWriter, r *http.Request) {
 		articlesResponse = append(articlesResponse, GetArticlesResponse{
 			Id:          v.Id,
 			Title:       v.Title,
-			Content:     v.Content,
 			Img:         v.Img,
 			Description: v.Description,
 			Created:     v.Created,
