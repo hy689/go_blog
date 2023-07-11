@@ -96,9 +96,9 @@ func UpdateArticle(article Article) (int64, error) {
 	return row, nil
 }
 
-func SearchArticle(title string) ([]Article, error) {
+func SearchArticle(title string, page int, pageSize int) ([]Article, error) {
 	var articles []Article
-	err := Db.Select(&articles, "select * from article where title like ?", "%"+title+"%")
+	err := Db.Select(&articles, "select * from article where title like ? limit ? offset ?", "%"+title+"%", pageSize, (page-1)*pageSize)
 	if err != nil {
 		fmt.Println("select article err:", err)
 		return nil, err

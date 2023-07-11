@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"go_blog/model"
 	"go_blog/utils"
 	"net/http"
@@ -61,6 +60,12 @@ type UpdateArticleCommand struct {
 	Description string `json:"description"`
 	Cid         int    `json:"cid"`
 	Id          int    `json:"id"`
+}
+
+type SearchArticleCommand struct {
+	Title    string `json:"title"`
+	Page     int    `json:"page"`
+	PageSize int    `json:"pageSize"`
 }
 
 func AddArticle(w http.ResponseWriter, r *http.Request) {
@@ -275,15 +280,27 @@ func GetArticleById(w http.ResponseWriter, r *http.Request) {
 }
 
 func SearchArticle(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		utils.HandleError(400, "请求格式错误", w)
+		return
 	}
 
-	query := r.URL.Query()
-	title := query.Get("title")
-	fmt.Println(title, "xxxxxxxxxxxxxxxxx")
+	c := &SearchArticleCommand{}
+	utils.MarshalCommand(r, c)
 
-	articles, err := model.SearchArticle(title)
+	title := c.Title
+	page := c.Page
+	pageSize := c.PageSize
+
+	if page == 0 {
+		page = 1
+	}
+
+	if pageSize == 0 {
+		pageSize = 10
+	}
+
+	articles, err := model.SearchArticle(title, page, pageSize)
 	if err != nil {
 		utils.HandleError(500, err.Error(), w)
 		return
