@@ -59,7 +59,7 @@ func GetArticles(page int, pageSize int, cId int) ([]Article, error) {
 
 func GetArticleById(id int64) Article {
 	var article Article
-	err := Db.Get(&article, "select * from article")
+	err := Db.Get(&article, "select * from article where id=?", id)
 	if err != nil {
 		fmt.Println("select article err:", err)
 	}
