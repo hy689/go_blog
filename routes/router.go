@@ -5,27 +5,46 @@ import (
 	"net/http"
 )
 
+// 跨域处理中间件
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// 设置请求头
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		// 调用下一个处理程序
+		next.ServeHTTP(w, r)
+	})
+}
+
 func InitRouter() {
 
-	http.HandleFunc("/user/add", api.AddUser)
-	http.HandleFunc("/user/getAll", api.GetUsers)
+	mux := http.NewServeMux()
 
-	http.HandleFunc("/category/add", api.AddCategory)
-	http.HandleFunc("/category/getAll", api.GetCategories)
-	http.HandleFunc("/category/update", api.UpdateCategory)
-	http.HandleFunc("/category/delete", api.DeleteCategory)
+	mux.HandleFunc("/user/add", api.AddUser)
+	mux.HandleFunc("/user/getAll", api.GetUsers)
 
-	http.HandleFunc("/article/add", api.AddArticle)
-	http.HandleFunc("/article/getAll", api.GetArticleList)
-	http.HandleFunc("/article/delete", api.DeleteArticle)
-	http.HandleFunc("/article/update", api.UpdateArticle)
-	http.HandleFunc("/article/getById", api.GetArticleById)
-	http.HandleFunc("/article/search", api.SearchArticle)
+	mux.HandleFunc("/category/add", api.AddCategory)
+	mux.HandleFunc("/category/getAll", api.GetCategories)
+	mux.HandleFunc("/category/update", api.UpdateCategory)
+	mux.HandleFunc("/category/delete", api.DeleteCategory)
 
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		panic(err)
+	mux.HandleFunc("/article/add", api.AddArticle)
+	mux.HandleFunc("/article/getAll", api.GetArticleList)
+	mux.HandleFunc("/article/delete", api.DeleteArticle)
+	mux.HandleFunc("/article/update", api.UpdateArticle)
+	mux.HandleFunc("/article/getById", api.GetArticleById)
+	mux.HandleFunc("/article/search", api.SearchArticle)
+
+	handler := corsMiddleware(mux)
+
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: handler,
 	}
+
+	server.ListenAndServe()
 }
 
 // func index(w http.ResponseWriter, r *http.Request) {
